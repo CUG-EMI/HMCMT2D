@@ -1,0 +1,9 @@
+name = "MUMPS"
+uuid = "edf6b03f-5646-49b9-9fbe-317571c7a453"
+authors = ["liaoweiyang2017 <1432844300@qq.com>"]
+version = "0.1.0"
+
+[deps]
+Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"

@@ -1,0 +1,8 @@
+datafile:        coprod2data.dat 
+modelfile:       coprod2.mod
+burninsamples:   100
+totalsamples:    10000
+resistivity:    0.1 1e4 0.05
+timeinterval:   0.015
+timestep:       6 10
+smoothparameter: 1.0

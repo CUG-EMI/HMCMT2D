@@ -1,0 +1,8 @@
+datafile:        dprism2dobs.dat 
+modelfile:       dprism2d_G96x49.mod
+burninsamples:   100
+totalsamples:    10000
+resistivity:    1.0 1e4 0.05
+timeinterval:   0.03
+timestep:       6 10
+smoothparameter: 1.0
