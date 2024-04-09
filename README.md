@@ -1,4 +1,4 @@
-# HMCMT: Hamiltonian Monte Carlo for 2D Magnetotelluric (MT) Data Inversion
+# HMCMT2D: Hamiltonian Monte Carlo for 2D Magnetotelluric (MT) Data Inversion
 
 The HMCMT package is a sophisticated tool designed for the 2D probabilistic inversion of Magnetotelluric (MT) data, coupled with uncertainty quantification using the Hamiltonian Monte Carlo method. Developed with the high-performance [Julia programming language](http://julialang.org), HMCMT facilitates advanced geophysical research by enabling precise analysis and interpretation of MT data.
 
