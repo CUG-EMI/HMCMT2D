@@ -49,7 +49,7 @@ There are several methods to install Julia on Linux:
     (_)     | (_) (_)    |  Documentation: https://docs.julialang.org
     _  _   _| |_  __ _   |  Type "?" for help, "]?" for Pkg help.
     | | | | | | |/ _` |  |
-    | | |_| | | | (_| |  |  Version 1.10.0 (2023-12-25)
+    | | |_| | | | (_| |  |  Version 1.10.1 (2024-02-13)
    _/ |\__'_|_|_|\__'_|  |  Official http://julialang.org/ release
   |__/                   |  
   
@@ -62,6 +62,8 @@ Due to the specialized use of the MUMPS package within our environment and the o
 
 1. **Custom MUMPS Package:** Initially based on an early version of the MUMPS package for Julia, we have incorporated the latest enhancements into our provided package to ensure seamless integration and superior performance.
 2. **Windows Compatibility:** Recognizing the challenges of running MUMPS on Windows, we have compiled a Windows-specific version of MUMPS.dll using MSYS2 and gfortran. This enables Windows users to enjoy the same level of efficiency and reliability as their Linux counterparts.
+3. **Linux Compatibility:** For Linux users, we also provide a Linux-specific version of MUMPS, ensuring compatibility and optimal performance across all platforms. By using our custom MUMPS package, users should install Intel oneAPI MKL to ensure compatibility with the MUMPS package.
+4. **MUMPS Binaries:**, All MUMPS binaries (Linux and Windows) are included in the `./lib` directory, and users can easily integrate them into their Julia environment to leverage the full capabilities of MUMPS.
 
 ## Running HMCMT
 
@@ -91,6 +93,25 @@ Until now you are in the environment HMCMT. The environment will not be well-con
 (HMCMT) pkg> instantiate
 ```
 By doing so the dependencies listed in `Project.toml` and `Manifest.toml` can be automatically downloaded and installed.
+
+Finally, you can exit the Pkg REPL by pressing `Backspace` or `Ctrl+C` to return to the Julia REPL. Then you need to add these packages to the current environment by typing the following command:
+```shell
+julia
+```
+
+```shell
+               _
+   _       _ _(_)_     |  Documentation: https://docs.julialang.org
+  (_)     | (_) (_)    |
+   _ _   _| |_  __ _   |  Type "?" for help, "]?" for Pkg help.
+  | | | | | | |/ _` |  |
+  | | |_| | | | (_| |  |  Version 1.10.1 (2024-02-13)
+ _/ |\__'_|_|_|\__'_|  |  Official https://julialang.org/ release
+|__/                   |
+julia> 
+]
+(@v1.10) pkg> add BenchmarkTools BinDeps DistributedArrays Distributions Primes Revise Distributed LinearAlgebra Printf Random SparseArrays Statistics Test
+```
 
 ### Running the Code
 
