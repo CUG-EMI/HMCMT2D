@@ -2,6 +2,7 @@ name = "HMCMT"
 uuid = "df47876e-5bba-4db6-934b-6e0045c7e5be"
 authors = ["liaoweiyang2017 <1432844300@qq.com>"]
 version = "0.1.0"
+
 [deps]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 BinDeps = "9e28174c-4ba2-5203-b857-d8d62c4213ee"
