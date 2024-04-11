@@ -63,7 +63,7 @@ Due to the specialized use of the MUMPS package within our environment and the o
 1. **Custom MUMPS Package:** Initially based on an early version of the MUMPS package for Julia, we have incorporated the latest enhancements into our provided package to ensure seamless integration and superior performance.
 2. **Windows Compatibility:** Recognizing the challenges of running MUMPS on Windows, we have compiled a Windows-specific version of MUMPS.dll using MSYS2 and gfortran. This enables Windows users to enjoy the same level of efficiency and reliability as their Linux counterparts.
 3. **Linux Compatibility:** For Linux users, we also provide a Linux-specific version of MUMPS, ensuring compatibility and optimal performance across all platforms. By using our custom MUMPS package, users should install Intel oneAPI MKL to ensure compatibility with the MUMPS package.
-4. **MUMPS Binaries:** All MUMPS binaries (Linux and Windows) are included in the `./lib` directory, and users can easily integrate them into their Julia environment to leverage the full capabilities of MUMPS.
+4. **MUMPS Binaries:** All MUMPS binaries (Linux and Windows) are included in the `./MUMPS/lib` directory, and users can easily integrate them into their Julia environment to leverage the full capabilities of MUMPS.
 
 ## Running HMCMT
 
