@@ -3,7 +3,6 @@
 # Peng Ronghua, Nov., 2021
 #
 #------------------------------------------------------------------------------
-# push!(LOAD_PATH,"/home/pc/pengrh/juliaRepo/smartEMv10/")
 push!(LOAD_PATH, pwd())
 push!(LOAD_PATH, joinpath(pwd(),"..","..","src"))
 push!(LOAD_PATH, joinpath(pwd(),"..","..","..","MUMPS","src"))
