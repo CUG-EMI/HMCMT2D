@@ -138,7 +138,7 @@ julia>
   ```
 
 ### Parallel HMC Sampling
-To perform parallel MCMC sampling, call the parallel HMC sampling function `parallelHMCSampler` instead of  the single HMC sampler `runHMCSampler` (please refer to the `paraHMCScript.jl` scripts within the `examples` directory).
+To perform parallel HMC sampling, call the parallel HMC sampling function `parallelHMCSampler` instead of  the single HMC sampler `runHMCSampler` (please refer to the `paraHMCScript.jl` scripts within the `examples` directory).
 
 * first you need to launch multiple worker processes by either starting Julia like
 
