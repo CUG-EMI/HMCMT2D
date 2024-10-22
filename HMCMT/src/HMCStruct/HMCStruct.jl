@@ -44,8 +44,8 @@ mutable struct HMCParameter{Ti<:Int, Tv<:Float64}
     rhomodel::Vector{Tv}         # conductivity model
     momentum::Vector{Tv}         # momentum parameter
     #
-    invM::AbstractMatrix{Tv}             # inverse of the mass matrix
-    sqrtM::AbstractMatrix{Tv}            # square root of the mass matrix
+    invM::Matrix{Tv}             # inverse of the mass matrix
+    sqrtM::Matrix{Tv}            # square root of the mass matrix
 
 end
 
@@ -76,16 +76,16 @@ mutable struct InvDataModel{T<:Float64}
 
     # observed data and data weighting
     obsData::Vector{ComplexF64}         # observed data
-    dataW::SparseMatrixCSC              # data weighting
+    dataW::SparseMatrixCSC{Float64, Int}              # data weighting
 
     # starting model
     strModel::Vector{T}                 # starting model
     refModel::Vector{T}                 # prior model
 
     # active cell and background model
-    activeCell::SparseMatrixCSC         #
+    activeCell::SparseMatrixCSC{Int, Int}         #
     bgModel::Vector{T}                  # background model keeping constant
-    Wm::SparseMatrixCSC                 # model covariance
+    Wm::SparseMatrixCSC{Float64, Int}                 # model covariance
 
 
 end
@@ -135,7 +135,7 @@ function initHMCPrior()
     regParam = 1.0
 
     hmcprior = HMCPrior(100,500,[0.01,10],0.05,dt,timestep,linearSolver,massType,regParam,0)
-    return hmcprior
+    return hmcprior::HMCPrior{Int,Float64}
 
 end
 

@@ -1,4 +1,4 @@
-
+using MUMPS: @compat_elapsed
 function solveMUMPS(A::SparseMatrixCSC{T1}, rhs::AbstractArray{T2},
 	                sym::Int=0,ooc::Int=0,tr::Int=0) where {T1,T2}
 
@@ -29,7 +29,7 @@ function factorMUMPS(A::SparseMatrixCSC{ComplexF64},sym::Int=0,ooc::Int=0)
     end
     n  = size(A,1);
     mumpsstat = [0];
-    facTime = @elapsed p  = ccall( (:factor_mumps_cmplx_, MUMPSlibPath),
+    facTime = @compat_elapsed p  = ccall( (:factor_mumps_cmplx_, MUMPSlibPath),
     		 Int64, ( Ptr{Int64}, Ptr{Int64}, Ptr{Int64}, Ptr{ComplexF64},
 			 Ptr{Int64}, Ptr{Int64}, Ptr{Int64}), Ref(n), Ref(sym), Ref(ooc),
 			 convert(Ptr{ComplexF64}, pointer(A.nzval)), A.rowval, A.colptr, mumpsstat);
@@ -46,7 +46,7 @@ function factorMUMPS(A::SparseMatrixCSC{Float64},sym::Int=0,ooc::Int=0)
     end
     n  = size(A,1);
     mumpsstat = [0];
-    facTime = @elapsed p  = ccall( (:factor_mumps_, MUMPSlibPath),
+    facTime = @compat_elapsed p  = ccall( (:factor_mumps_, MUMPSlibPath),
  	       Int64, ( Ptr{Int64}, Ptr{Int64}, Ptr{Int64}, Ptr{Float64},
 		   Ptr{Int64}, Ptr{Int64}, Ptr{Int64}),
            Ref(n), Ref(sym), Ref(ooc), A.nzval, A.rowval, A.colptr, mumpsstat);
@@ -78,7 +78,7 @@ function applyMUMPS(factor::MUMPSfactorization{T1},rhs::AbstractArray{T2,N},
 	id1 = myid()
 	id2 = factor.worker
 	if id1 != id2
-		warn("Worker $id1 has no access to MUMPS factorization stored on $id2. Trying to remotecall!")
+		@warn("Worker $id1 has no access to MUMPS factorization stored on $id2. Trying to remotecall!")
 		return remotecall_fetch(applyMUMPS,factor.worker,factor,rhs,x,tr)::Array{promote_type(T1,T2),N}
 	end
 

@@ -266,17 +266,17 @@ function compJacTMat(exTE::Array{T}, hxTM::Array{T}, mt2dMesh::TensorMesh2D,
 
             # solve the pseudo forward problem
             if lsFlag == 0
-                # @time eMat[ii, :] = applyMUMPS(AinvTE[iFreq], Lt[ii, :])
-                @time sTmp = applyMUMPS(AinvTE[iFreq], Lt[ii, :])
+                # eMat[ii, :] = applyMUMPS(AinvTE[iFreq], Lt[ii, :])
+                sTmp = applyMUMPS(AinvTE[iFreq], Lt[ii, :])
 
             elseif lsFlag == 1
-                @time sTmp = AiiTE \ full(Lt[ii, :])
+                sTmp = AiiTE \ full(Lt[ii, :])
 
             elseif lsFlag == 2
-                @time sTmp = mumpsSolver(AiiTE, Lt[ii, :])
+                sTmp = mumpsSolver(AiiTE, Lt[ii, :])
 
             elseif lsFlag == 3
-                @time sTmp = pardiSolver(AiiTE, full(Lt[ii, :]))
+                sTmp = pardiSolver(AiiTE, full(Lt[ii, :]))
 
             end
 
@@ -357,16 +357,16 @@ function compJacTMat(exTE::Array{T}, hxTM::Array{T}, mt2dMesh::TensorMesh2D,
 
             # solve the pseudo forward problem
             if lsFlag == 0
-                @time sTmp = applyMUMPS(AinvTM[iFreq], Lt[ii, :])
+                sTmp = applyMUMPS(AinvTM[iFreq], Lt[ii, :])
 
             elseif lsFlag == 1
-                @time sTmp = AiiTM \ full(Lt[ii, :])
+                sTmp = AiiTM \ full(Lt[ii, :])
 
             elseif lsFlag == 2
-                @time sTmp = mumpsSolver(AiiTM, Lt[ii, :])
+                sTmp = mumpsSolver(AiiTM, Lt[ii, :])
 
             elseif lsFlag == 3
-                @time sTmp = pardiSolver(AiiTM, full(Lt[ii, :]))
+                sTmp = pardiSolver(AiiTM, full(Lt[ii, :]))
 
             end
 

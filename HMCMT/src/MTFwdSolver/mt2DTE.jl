@@ -46,7 +46,7 @@ function compMT2DTE(freq::T, mt2dMesh::TensorMesh2D, coeMat::CoeffMat,
     # solve the linear system
     if isempty(linearSolver)
         Ainv = lu(Aii)
-        Eii  = Ainv \ rhs
+        Eii  = collect(Ainv) \ rhs
     elseif lowercase(linearSolver) == "mumps"
         sym  = 1
         Ainv = factorMUMPS(Aii, sym)

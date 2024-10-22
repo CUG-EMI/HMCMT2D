@@ -25,6 +25,6 @@ end
 #
 printstyled("perform HMC sampling in parallel ...\n", color=:blue)
 pids = workers()
-@time (results, hmcstats) = parallelHMCSampler(mtMesh,mtData,invParam,hmcprior,pids)
+(results, hmcstats) = parallelHMCSampler(mtMesh,mtData,invParam,hmcprior,pids)
 
 println("=======================================")

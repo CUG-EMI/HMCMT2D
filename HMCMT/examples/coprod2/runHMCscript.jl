@@ -7,6 +7,7 @@ push!(LOAD_PATH, pwd())
 push!(LOAD_PATH, joinpath(pwd(),"..","..","src"))
 push!(LOAD_PATH, joinpath(pwd(),"..","..","..","MUMPS","src"))
 using LinearAlgebra, Printf
+import HMCMT
 using HMCMT.HMCFileIO
 using HMCMT.MTFwdSolver
 using HMCMT.MTSensitivity
@@ -17,20 +18,32 @@ using HMCMT.HMCSampler
 ENV["OMP_NUM_THREADS"] = 48
 ENV["MKL_NUM_THREADS"] = 48
 #------------------------------------------------------------------------------
-printstyled("Reading datafile and modelfile ...\n", color=:blue)
-startup = "startupfile"
-(mtMesh,mtData,invParam,hmcprior) = readstartupFile(startup)
 
+
+function main(args)
+    if isempty(args)
+        @isdefined(SyslabCC) || cd(@__DIR__)
+        startup = "startupfile"
+    else
+        startup = args[1]
+    end
+
+    println("Reading datafile and modelfile ...\n")
+    (mtMesh,mtData,invParam,hmcprior) = readstartupFile(startup)
+
+    println("Performing HMC inversion ...\n")
+    cputime = HMCMT.@compat_elapsed (hmcmodel,hmcstats,hmcdata) = runHMCSampler(mtMesh, mtData, invParam, hmcprior)
+
+    println("cputime: $cputime")
+    #
+    println("Computing Posterior mean model ...\n")
+    getPosteriorModel(hmcmodel,mtMesh,invParam,hmcprior)
+
+    println("Output HMC samples ...\n")
+    outputHMCSamples(hmcmodel,hmcstats,hmcdata,cputime=cputime)
+    println("=======================================")
+end
+
+@isdefined(SyslabCC) || main(ARGS)
 #
-printstyled("Performing HMC inversion ...\n", color=:blue)
-cputime = @elapsed (hmcmodel,hmcstats,hmcdata) = runHMCSampler(mtMesh, mtData, invParam, hmcprior)
 
-#
-printstyled("Computing Posterior mean model ...\n", color=:blue)
-getPosteriorModel(hmcmodel,mtMesh,invParam,hmcprior)
-
-printstyled("Output HMC samples ...\n", color=:blue)
-outputHMCSamples(hmcmodel,hmcstats,hmcdata,cputime=cputime)
-
-#
-println("=======================================")

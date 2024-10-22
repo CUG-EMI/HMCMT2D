@@ -1,4 +1,4 @@
-datafile:        coprod2data.dat 
+datafile:        coprod2data.dat
 modelfile:       coprod2.mod
 burninsamples:   100
 totalsamples:    10000

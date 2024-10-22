@@ -1,3 +1,4 @@
+using HMCMT: unix_readline
 #-------------------------------------------------------------------------------
 """
 `readMT2DData(datafile)` reads MT2D data file.
@@ -13,32 +14,35 @@ Output:
 """
 function readMT2DData(datafile::String)
 
-    if isfile(datafile)
-        fid = open(datafile, "r")
-    else
-        error("$(datafile) does not exist, please try again.")
+    fid = try
+        open(datafile, "r")
+    catch e
+        if e isa Base.IOError
+            println("$(datafile) does not exist, please try again.")
+        end
+        throw(e)
     end
 
-    rxLoc = []
-    rxID  = []
-    freqID = []
-    dtID   = []
-    obsData = []
-    dataErr = []
-    dataType  = []
-    dataComp  = []
-    freqs = []
+    rxLoc = zeros(Float64, 0, 0)
+    rxID  = Int[]
+    freqID = Int[]
+    dtID   = Int[]
+    obsData = Float64[]::Union{Vector{ComplexF64}, Vector{Float64}}
+    dataErr = Float64[]
+    dataType  = ""
+    dataComp  = String[]
+    freqs = Float64[]
     compTE = false
     compTM = false
     isComplex = false
-    nr  = []; nDt = []; nf  = []
+    nr  = 0; nDt = 0; nf  = 0
     while !eof(fid)
 
-        cline = strip(readline(fid))
+        cline = strip(unix_readline(fid))
 
         # ignore all comments: empty line, or line preceded with #
-        while cline[1] == '#' || isempty(cline)
-            cline = strip(readline(fid))
+        while startswith(cline, '#') || isempty(cline) || cline == "\r"
+            cline = strip(unix_readline(fid))
         end
 
         # data format
@@ -53,9 +57,9 @@ function readMT2DData(datafile::String)
             nd  = 0
             rxLoc = zeros(nr, 2)
             while nd < nr
-                cline = strip(readline(fid))
-                while cline[1] == '#' || isempty(cline)
-                    cline = strip(readline(fid))
+                cline = strip(unix_readline(fid))
+                while startswith(cline, '#') || isempty(cline) || cline == "\r"
+                    cline = strip(unix_readline(fid))
                 end
                 cline = split(cline)
                 nd = nd + 1
@@ -71,9 +75,9 @@ function readMT2DData(datafile::String)
             nd  = 0
             freqs = zeros(nf)
             while nd < nf
-                cline = strip(readline(fid))
-                while cline[1] == '#' || isempty(cline)
-                    cline = strip(readline(fid))
+                cline = strip(unix_readline(fid))
+                while startswith(cline, '#') || isempty(cline) || cline == "\r"
+                    cline = strip(unix_readline(fid))
                 end
                 #cline = split(cline)
                 nd = nd + 1
@@ -101,7 +105,7 @@ function readMT2DData(datafile::String)
             dataComp = Array{String}(undef, nDt)
             nd = 0
             while nd < nDt
-                cline = strip(readline(fid))
+                cline = strip(unix_readline(fid))
                 nd = nd + 1
                 dataComp[nd] = cline
             end
@@ -122,9 +126,9 @@ function readMT2DData(datafile::String)
             dataErr = zeros(nData)
 
             while nd < nData
-                cline = strip(readline(fid))
-                while cline[1] == '#' || isempty(cline)
-                    cline = strip(readline(fid))
+                cline = strip(unix_readline(fid))
+                while startswith(cline, '#') || isempty(cline) || cline == "\r"
+                    cline = strip(unix_readline(fid))
                 end
                 cline = split(cline)
                 nd = nd + 1
@@ -174,6 +178,12 @@ function readMT2DData(datafile::String)
 
     datInfo = MTData(rxLoc, freqs, dataType, dataComp, rxID, freqID, dtID, dataID, compTE, compTM)
 
-    return datInfo, obsData, dataErr
+    return ReadMT2DDataRet(datInfo, obsData, dataErr)
 
+end
+
+struct ReadMT2DDataRet
+    a::MTData
+    b::Union{Vector{ComplexF64}, Vector{Float64}}
+    c::Vector{Float64}
 end

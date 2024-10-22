@@ -51,10 +51,10 @@ mutable struct TensorMesh2D{T<:Real}
     origin::Vector{T}           # origin of mesh
     sigma::Vector{T}            # conductivity of mesh
 
-    Face::SparseMatrixCSC       # Face area
-    Grad::SparseMatrixCSC       # nodal gradient
-    AveCN::SparseMatrixCSC      # averaging mapping from cell-center to node
-    AveCF::SparseMatrixCSC      # averaging mapping from cell-center to face
+    Face::SparseMatrixCSC{Float64, Int}       # Face area
+    Grad::SparseMatrixCSC{Float64, Int}       # nodal gradient
+    AveCN::SparseMatrixCSC{Float64, Int}      # averaging mapping from cell-center to node
+    AveCF::SparseMatrixCSC{Float64, Int}      # averaging mapping from cell-center to face
     setup::Bool                 # whether operators have been set up or not
 
 end # type
