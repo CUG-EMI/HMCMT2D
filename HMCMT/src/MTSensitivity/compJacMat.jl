@@ -208,16 +208,16 @@ function compJacMat(exTE::Array{T}, hxTM::Array{T}, mt2dMesh::TensorMesh2D,
 
             # solve the pseudo forward problem
             if lsFlag == 0
-                @time dExTE[ii, :]  = applyMUMPS(AinvTE[iFreq], PplusB)
+                dExTE[ii, :]  = applyMUMPS(AinvTE[iFreq], PplusB)
 
             elseif lsFlag == 1
-                @time dExTE[ii, :] = AiiTE \ (PplusB)
+                dExTE[ii, :] = AiiTE \ (PplusB)
 
             elseif lsFlag == 2
-                @time dExTE[ii, :] = mumpsSolver(AiiTE, PplusB)
+                dExTE[ii, :] = mumpsSolver(AiiTE, PplusB)
 
             elseif lsFlag == 3
-                @time dExTE[ii, :] = pardiSolver(AiiTE, PplusB)
+                dExTE[ii, :] = pardiSolver(AiiTE, PplusB)
 
             end
 
@@ -283,16 +283,16 @@ function compJacMat(exTE::Array{T}, hxTM::Array{T}, mt2dMesh::TensorMesh2D,
 
             # solve the pseudo forward problem
             if lsFlag == 0
-                @time dHxTM[ii, :]  = applyMUMPS(AinvTM[iFreq], PplusB)
+                dHxTM[ii, :]  = applyMUMPS(AinvTM[iFreq], PplusB)
 
             elseif lsFlag == 1
-                @time dHxTM[ii, :] = AiiTM \ (PplusB)
+                dHxTM[ii, :] = AiiTM \ (PplusB)
 
             elseif lsFlag == 2
-                @time dHxTM[ii, :] = mumpsSolver(AiiTM, PplusB)
+                dHxTM[ii, :] = mumpsSolver(AiiTM, PplusB)
 
             elseif lsFlag == 3
-                @time dHxTM[ii, :] = pardiSolver(AiiTM, PplusB)
+                dHxTM[ii, :] = pardiSolver(AiiTM, PplusB)
 
             end
 

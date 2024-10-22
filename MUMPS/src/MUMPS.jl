@@ -1,5 +1,6 @@
 module MUMPS
 
+include("AOTCompat.jl")
 using SparseArrays
 using Printf
 using Distributed

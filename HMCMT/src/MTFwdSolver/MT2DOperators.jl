@@ -137,6 +137,7 @@ Construct sparse unit matrix, replace the built-in function speye that is deprec
 
 """
 function spunit(n::Integer)
+    # Matrix{Int}(I,n,n)
     return sparse(1.0I, n, n)
 end
 
@@ -147,6 +148,15 @@ end
 """
 function spdiag((x1,x2), (d1,d2), m, n)
     I, J, V = SparseArrays.spdiagm_internal(d1 => x1, d2 => x2)
+
+    # non-sparse form:
+    # M = zeros(m,n)
+    # for i = 1:length(I)
+    #     M[I[i], J[i]] = V[i]
+    # end
+    # return M
+
+    # sparse form:
     return sparse(I, J, V, m, n)
 
 end

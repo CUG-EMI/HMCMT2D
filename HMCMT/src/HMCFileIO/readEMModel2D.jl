@@ -1,3 +1,4 @@
+using HMCMT: unix_readline
 """
 `readEMModel2D(modelfile)` reads model parameters from a EM2D model file.
 
@@ -10,30 +11,33 @@ Output:
 """
 function readEMModel2D(modelfile::String)
 
-    if isfile(modelfile)
-        fid = open(modelfile, "r")
-    else
-        error("$(modelfile) does not exist, please try again.")
+    fid = try
+        open(modelfile, "r")
+    catch e
+        if e isa Base.IOError
+            println("$(modelfile) does not exist, please try again.")
+        end
+        throw(e)
     end
 
-    yLen = []
-    zLen = []
+    yLen = Float64[]
+    zLen = Float64[]
     nAir = 0
-    airLayer = []
-    gridSize = []
-    sigma = []
-    origin = []
-    resType = []
-    ny = []
-    nz = []
+    airLayer = Float64[]
+    gridSize = Int[]
+    sigma = Float64[]
+    origin = Float64[]
+    resType = ""
+    ny = 0
+    nz = 0
 
     while !eof(fid)
 
-        cline = strip(readline(fid))
+        cline = strip(unix_readline(fid))
 
         # ignore comments and empty lines
-        while cline[1] == '#' || isempty(cline)
-            cline = strip(readline(fid))
+        while startswith(cline, '#') || isempty(cline) || cline == "\r"
+            cline = strip(unix_readline(fid))
         end
 
         # blocks at y-axis
@@ -44,7 +48,7 @@ function readEMModel2D(modelfile::String)
             yLen = zeros(ny)
 
             while nd < ny
-                cline = strip(readline(fid))
+                cline = strip(unix_readline(fid))
                 cline = split(cline)
                 num = length(cline)
                 for i = 1:num
@@ -61,7 +65,7 @@ function readEMModel2D(modelfile::String)
             zLen = zeros(nz)
 
             while nd < nz
-                cline = strip(readline(fid))
+                cline = strip(unix_readline(fid))
                 cline = split(cline)
                 num = length(cline)
                 for i = 1:num
@@ -78,7 +82,7 @@ function readEMModel2D(modelfile::String)
             airLayer = zeros(nAir)
 
             while nd < nAir
-                cline = strip(readline(fid))
+                cline = strip(unix_readline(fid))
                 cline = split(cline)
                 num = length(cline)
                 for i = 1:num
@@ -101,7 +105,7 @@ function readEMModel2D(modelfile::String)
 
             sigma = zeros(nBlock)
             while nd < nBlock
-                cline = strip(readline(fid))
+                cline = strip(unix_readline(fid))
                 cline = split(cline)
                 num = length(cline)
                 for i = 1:num

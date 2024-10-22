@@ -19,12 +19,12 @@ export MT2DFwdData
 mutable struct CoeffMat{T<:Float64}
 
     # inner coefficient matrix, real and imaginary parts
-    rAii :: SparseMatrixCSC{T}
-    iAii :: SparseMatrixCSC{T}
+    rAii :: SparseMatrixCSC{T, Int}
+    iAii :: SparseMatrixCSC{T, Int}
 
     # outter (boundary) coefficients, real and imaginary parts
-    rAio :: SparseMatrixCSC{T}
-    iAio :: SparseMatrixCSC{T}
+    rAio :: SparseMatrixCSC{T, Int}
+    iAio :: SparseMatrixCSC{T, Int}
 
 end # type
 
@@ -118,8 +118,9 @@ function MT2DFwdSolver(mt2dMesh::TensorMesh2D, mtData::MTData;
         AinvTE = Array{Any}(undef,nFreq)
         AinvTM = Array{Any}(undef,nFreq)
     elseif lowercase(linearSolver) == "mumps"
-        AinvTE = Array{MUMPSfactorization}(undef, nFreq)
-        AinvTM = copy(AinvTE)
+        error("calling Distributed.jl")
+        # AinvTE = Array{MUMPSfactorization}(undef, nFreq)
+        # AinvTM = copy(AinvTE)
     end
 
     if compTE
@@ -187,7 +188,8 @@ function MT2DFwdSolver(mt2dMesh::TensorMesh2D, mtData::MTData;
             predDataTM = complex.(respTM[:, 1], respTM[:, 2])
             predData = hcat(predDataTE, predDataTM)
             predData = vec(transpose(predData))
-
+        else
+            error("invalid branch")
         end
 
     elseif occursin("Rho_Pha", dataType)
@@ -203,7 +205,8 @@ function MT2DFwdSolver(mt2dMesh::TensorMesh2D, mtData::MTData;
             predDataTM = transpose(respTM)
             predData = vcat(predDataTE, predDataTM)
             predData = vec(predData)
-
+        else
+            error("invalid branch")
         end
 
     end
@@ -217,16 +220,18 @@ function MT2DFwdSolver(mt2dMesh::TensorMesh2D, mtData::MTData;
             AinvTE = zeros(0)
             AinvTM = zeros(0)
         elseif lowercase(linearSolver) == "mumps"
-            if compTE
-                for j = 1:nFreq
-                    destroyMUMPS(AinvTE[j])
-                end
-            end
-            if compTM
-                for j = 1:nFreq
-                    destroyMUMPS(AinvTM[j])
-                end
-            end
+            error("calling Distributed.jl")
+            # This triggers Distributed.jl, disable it tentatively
+            # if compTE
+            #     for j = 1:nFreq
+            #         destroyMUMPS(AinvTE[j])
+            #     end
+            # end
+            # if compTM
+            #     for j = 1:nFreq
+            #         destroyMUMPS(AinvTM[j])
+            #     end
+            # end
         end
         return predData
 
@@ -234,7 +239,6 @@ function MT2DFwdSolver(mt2dMesh::TensorMesh2D, mtData::MTData;
         fwdInfo = MT2DFwdData(exte, hytm, AinvTE, AinvTM, linearSolver)
         return predData, fwdInfo
     end
-
 
 end
 
@@ -278,7 +282,7 @@ function mumpsSolver(Ke::SparseMatrixCSC, rhs::AbstractArray; ooc::Int=0,
     # decomposition can be used. MUMPS package is used for this purpose.
 
     sym  = 1
-    @time Ainv = factorMUMPS(Ke, sym, ooc)
+    Ainv = factorMUMPS(Ke, sym, ooc)
 
     nD = size(rhs, 1)
     ns = size(rhs, 2)

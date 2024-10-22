@@ -1,27 +1,34 @@
 export readstartupFile
+using HMCMT: unix_readline;
 
 #-------------------------------------------------------------------------------
 function readstartupFile(startupfile::String)
 
     #
-    if isfile(startupfile)
-        fid = open(startupfile, "r")
-    else
-        error("$(startupfile) does not exist, please try again.")
+    fid = try
+        open(startupfile, "r")
+    catch e
+        if e isa Base.IOError
+            println("$(startupfile) does not exist, please try again.")
+        end
+        throw(e)
     end
 
-    datafile  = []
-    modelfile = []
+    datafile  = ""
+    modelfile = ""
     sigmin = 0.0
     sigmax = 0.0
     sigfix = [1e-8]
     hmcprior = initHMCPrior()
+
     while !eof(fid)
-        cline = strip(readline(fid))
+        cline = strip(unix_readline(fid))
+        println(repr(cline))
 
         # ignore all comments: empty line, or line preceded with #
-        while cline[1] == '#' || isempty(cline)
-            cline = strip(readline(fid))
+        while startswith(cline, '#') || isempty(cline) || cline == "\r"
+            cline = strip(unix_readline(fid))
+            continue
         end
 
         # data and start model filename
@@ -81,17 +88,19 @@ function readstartupFile(startupfile::String)
             hmcprior.regParam = parse(Float64, tmp[end])
 
         end
-
     end
 
     #
     println("Reading data file $(datafile) ...")
-    @time (mtData, obsData, dataErr) = readMT2DData(datafile)
+    readMTRet = readMT2DData(datafile)
+    mtData = readMTRet.a
+    obsData = readMTRet.b
+    dataErr = readMTRet.c
 
     println("Reading model file $modelfile ...")
-    @time mtMesh =  readEMModel2D(modelfile)
+    mtMesh =  readEMModel2D(modelfile)
     if !mtMesh.setup
-        @time setupTensorMesh2D!(mtMesh)
+        setupTensorMesh2D!(mtMesh)
     end
 
     #

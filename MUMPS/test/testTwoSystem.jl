@@ -20,14 +20,14 @@ rhs = randn(n,nrhs) + im*randn(n,nrhs);
 rhs2 = randn(n2,nrhs);
 
 println("Factorize complex matrix")
-@time F1 = factorMUMPS(A,1);
+F1 = factorMUMPS(A,1);
 
 
 println("Factorize real matrix")
-@time F2 = factorMUMPS(A2,1);
+F2 = factorMUMPS(A2,1);
 
 println("Solve complex system")
-@time x = applyMUMPS(F1,rhs);
+x = applyMUMPS(F1,rhs);
 err = zeros(nrhs)
 for i=1:nrhs
         err[i] =  norm(A*x[:,i]-rhs[:,i]) / norm(rhs[:,i]);
@@ -35,7 +35,7 @@ end
 @test maximum(err) < 1e-14
 
 println("Solve real system")
-@time x2 = applyMUMPS(F2,rhs2);
+x2 = applyMUMPS(F2,rhs2);
 err = zeros(nrhs)
 for i=1:nrhs
         err[i] =  norm(A2*x2[:,i]-rhs2[:,i]) / norm(rhs2[:,i]);

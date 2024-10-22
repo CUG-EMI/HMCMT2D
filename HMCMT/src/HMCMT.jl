@@ -11,6 +11,7 @@ VERSION >= v"1.0.0" && __precompile__()
 
 module HMCMT
 
+include("AOTCompat.jl")
 include("HMCFileIO/HMCFileIO.jl")
 include("MTFwdSolver/MTFwdSolver.jl")
 include("HMCUtility/HMCUtility.jl")

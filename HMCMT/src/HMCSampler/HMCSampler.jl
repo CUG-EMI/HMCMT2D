@@ -77,7 +77,7 @@ function runHMCSampler(mtMesh::TensorMesh2D,
     # initialize HMC parameter
     nparam   = length(invParam.strModel)
     ndata    = length(invParam.obsData)
-    hmcParamCurrent  = initHMCParameter(nparam)
+    hmcParamCurrent::HMCParameter{Int,Float64}  = initHMCParameter(nparam)
     if hmcprior.massType == "diagonal"
         scaling = 1.0 #/ (hmcprior.sigmastd * hmcprior.sigmastd)
         (invM, sqrtM) = setMassMatrix(nparam, scaling)
@@ -133,7 +133,7 @@ function runHMCSampler(mtMesh::TensorMesh2D,
 
         iterNo += 1
         # propose model and momentum parameters
-        @time (propModel,propMomentum) = proposeLeapfrog(hmcParamCurrent,mtMesh,
+        (propModel,propMomentum) = proposeLeapfrog(hmcParamCurrent,mtMesh,
                                                        mtData,invParam,hmcprior)
         hmcParamProposed = updateHMCParam!(hmcParamProposed,propModel,propMomentum)
 
@@ -156,14 +156,14 @@ function runHMCSampler(mtMesh::TensorMesh2D,
             hmcstats.nAccept += 1
             hmcstats.acceptstats[iterNo] = true
             tmp = exp(hdif)
-            printstyled("Accepted with acceptance probability $(tmp).\n", color=:cyan)
+            println("\033[32mAccepted with acceptance probability $(tmp).\n\033[0m")
             # save predicted data
             hmcdata[:, iterNo+1] = copy(predData)
 
         else
             hmcstats.nReject += 1
             tmp = exp(hdif)
-            printstyled("Rejected with acceptance probability $(tmp).\n", color=:red)
+            println("\033[31mRejected with acceptance probability $(tmp).\n\033[0m")
 
             # save predicted data
             hmcdata[:, iterNo+1] = copy(hmcdata[:, iterNo])
@@ -425,7 +425,10 @@ function getMomentumVector(nparam::Int, hmcParam::HMCParameter)
     maxVal = 2.5
     mp  = randn(nparam)
     ind = abs.(mp) .> maxVal
-    mp[ind] = sign.(mp[ind]) * maxVal
+
+    @inbounds for i in ind
+        mp[i] = sign(mp[i]) * maxVal
+    end
 
     mp = hmcParam.sqrtM * mp
 
