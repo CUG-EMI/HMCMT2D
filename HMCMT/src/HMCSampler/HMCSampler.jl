@@ -361,7 +361,26 @@ function getHamiltonian(mtData::MTData, mtMesh::TensorMesh2D,
 
     # first compute predicted data for current model m
     solver = hmcprior.linearSolver
-    predData   = MT2DFwdSolver(mtMesh, mtData, task="PF",linearSolver=solver)
+    (predData,fwdInfo) = MT2DFwdSolver(mtMesh, mtData, linearSolver=solver)
+    # free memory
+    if isempty(solver)
+        fwdInfo.AinvTE = zeros(0)
+        fwdInfo.AinvTM = zeros(0)
+    elseif lowercase(solver) == "mumps"
+        nFreq = length(mtData.freqs)
+        if mtData.compTE
+            for j = 1:nFreq
+                destroyMUMPS(fwdInfo.AinvTE[j])
+            end
+        end
+        if mtData.compTM
+            for j = 1:nFreq
+                destroyMUMPS(fwdInfo.AinvTM[j])
+            end
+        end
+
+    end
+
     dataMisfit = compDataMisfit(predData, invParam)
     momentum   = hmcParam.momentum
     kp         = getKineticEnergy(momentum, hmcParam)
