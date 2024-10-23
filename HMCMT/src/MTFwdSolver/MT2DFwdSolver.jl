@@ -58,29 +58,27 @@ end
 `MTFwdSolver` is the top function being called to solve the MT2D forward problem.
 
 Input:
-    `mt2dMesh` =::TensorMesh2D
+    `mtMesh` =::TensorMesh2D
     `mtData`  =::MTData
-    `task`: a string to determine return `predData` or `fwdResp`
     `linearSolver`: a string to determine which linear solver is used
 
 Output:
     predData:  forward data
     exte:      solution Ex fields (at grid nodes) of TE mode
-    hytm:      solution Hy fields (at grid nodes) of TM mode
+    hxtm:      solution Hy fields (at grid nodes) of TM mode
     AinvTE:    system matrix decomposition factor of TE mode
     AinvTM:    system matrix decomposition factor of TM mode
     fwdResp:   pure forward response
 
 """
-function MT2DFwdSolver(mt2dMesh::TensorMesh2D, mtData::MTData;
-    task::String="", linearSolver::String="")
+function MT2DFwdSolver(mtMesh::TensorMesh2D, mtData::MTData; linearSolver::String="")
 
     MU0 = 4 * pi * 1e-7
 
     # extract field values from input derived type
-    yLen     = mt2dMesh.yLen
-    zLen     = mt2dMesh.zLen
-    sigma    = mt2dMesh.sigma
+    yLen     = mtMesh.yLen
+    zLen     = mtMesh.zLen
+    sigma    = mtMesh.sigma
 
     freqs    = mtData.freqs
     rxLoc    = mtData.rxLoc
@@ -101,17 +99,17 @@ function MT2DFwdSolver(mt2dMesh::TensorMesh2D, mtData::MTData;
     nNode = (ny+1)*(nz+1)
 
     mu = MU0 * ones(ny*nz)
-    F     = mt2dMesh.Face
-    Grad  = mt2dMesh.Grad
-    AveCN = mt2dMesh.AveCN
-    AveCF = mt2dMesh.AveCF
+    F     = mtMesh.Face
+    Grad  = mtMesh.Grad
+    AveCN = mtMesh.AveCN
+    AveCF = mtMesh.AveCF
 
     # set the index of inner and outter/boundary part of coefficient matrix
     (ii, io) = getBoundaryIndex(ny, nz)
 
     # resolved fields at grid nodes
     exte = zeros(ComplexF64, nNode, nFreq)
-    hytm = copy(exte)
+    hxtm = copy(exte)
 
     # MUMPS matrix decompostion factor
     if isempty(linearSolver)
@@ -143,7 +141,7 @@ function MT2DFwdSolver(mt2dMesh::TensorMesh2D, mtData::MTData;
             freq = freqs[j]
             js = (j-1)*nRx+1
             je = j*nRx
-            (respTE[js:je,:],exte[:, j],AinvTE[j])= compMT2DTE(freq, mt2dMesh,
+            (respTE[js:je,:],exte[:, j],AinvTE[j])= compMT2DTE(freq, mtMesh,
             coeMatTE, rxLoc, dataType, linearSolver=linearSolver)
         end
     end  # compTE
@@ -168,7 +166,7 @@ function MT2DFwdSolver(mt2dMesh::TensorMesh2D, mtData::MTData;
             freq = freqs[j]
             js = (j-1)*nRx+1
             je = j*nRx
-            (respTM[js:je,:],hytm[:, j],AinvTM[j]) = compMT2DTM(freq, mt2dMesh,
+            (respTM[js:je,:],hxtm[:, j],AinvTM[j]) = compMT2DTM(freq, mtMesh,
             coeMatTM, rxLoc, dataType, linearSolver=linearSolver)
         end
     end  # compTM
@@ -211,30 +209,9 @@ function MT2DFwdSolver(mt2dMesh::TensorMesh2D, mtData::MTData;
     dataID   = mtData.dataID
     predData = predData[dataID]
 
-    # Pure forward problem
-    if uppercase(task) == "PF"
-        if isempty(linearSolver)
-            AinvTE = zeros(0)
-            AinvTM = zeros(0)
-        elseif lowercase(linearSolver) == "mumps"
-            if compTE
-                for j = 1:nFreq
-                    destroyMUMPS(AinvTE[j])
-                end
-            end
-            if compTM
-                for j = 1:nFreq
-                    destroyMUMPS(AinvTM[j])
-                end
-            end
-        end
-        return predData
-
-    else
-        fwdInfo = MT2DFwdData(exte, hytm, AinvTE, AinvTM, linearSolver)
-        return predData, fwdInfo
-    end
-
+    # forward response
+    fwdInfo = MT2DFwdData(exte, hxtm, AinvTE, AinvTM, linearSolver)
+    return predData, fwdInfo
 
 end
 
